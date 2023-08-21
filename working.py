@@ -19,8 +19,8 @@ import pinecone
 app = Flask(__name__)
 
 model_id = "gpt-3.5-turbo"
-openai.api_key = "<OPENAI_API_KEY>"
-os.environ["OPENAI_API_KEY"] = "<OPENAI_API_KEY>"
+openai.api_key = "<Key>"
+os.environ["OPENAI_API_KEY"] = "<Key>"
 
 def langchain_response(question):
     loader = DirectoryLoader(path="./summaries", glob="*.txt", loader_cls=TextLoader)
@@ -34,15 +34,15 @@ def langchain_response(question):
     embeddings = OpenAIEmbeddings()
     
     pinecone.init(
-        api_key="<>",  # find at app.pinecone.io
-        environment="<>",  # next to api key in console
+        api_key="<Key>",  # find at app.pinecone.io
+        environment="<Key>",  # next to api key in console
     )
 
     index_name = "readmeai"
     # The OpenAI embedding model `text-embedding-ada-002 uses 1536 dimensions`
     docsearch = Pinecone.from_documents(texts, embeddings, index_name=index_name)
 
-    llm = OpenAI(temperature=0.1, openai_api_key="<>")
+    llm = OpenAI(temperature=0.1, openai_api_key="<Key>")
     chain = load_qa_chain(llm, chain_type="stuff")
     docs = docsearch.similarity_search(question)
     print(chain.run(input_documents=docs, question=question))

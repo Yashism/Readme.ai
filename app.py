@@ -8,6 +8,7 @@ from langchain.document_loaders import TextLoader
 from langchain.document_loaders import DirectoryLoader
 from flask import Flask, render_template, request, redirect, url_for
 from github import Github
+from revChatGPT.V1 import Chatbot
 from ignore import should_ignore
 import openai
 import os
@@ -17,8 +18,11 @@ import shutil
 app = Flask(__name__)
 
 model_id = "gpt-3.5-turbo"
-openai.api_key = "OPENAI_API_KEY"
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
+openai.api_key = "<Key>"
+os.environ["OPENAI_API_KEY"] = "<Key>"
+chatbot = Chatbot(config={
+  "access_token": "<Key>"
+})
 
 def langchain_response(question):
     loader = DirectoryLoader(path="./summaries", glob="*.txt", loader_cls=TextLoader)
@@ -43,34 +47,13 @@ def langchain_response(question):
         
     prompt_template += "Based on the above documents, answer the question.\n\n"
     
-
-    # Generate response using GPT-3.5-turbo
-    conversation = [{"role": "user", "content": prompt_template}]
-    response = ChatGPT_conversation(conversation)
-    print(response[-1]["content"])
+    response = ""
+    for data in chatbot.ask(
+        prompt_template,
+    ):
+        response = data["message"]
+    print(response)
     
-                    
-    return response[-1]["content"]
-    
-    
-    # qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.5, openai_api_key = "OPENAI_API_KEY"), db.as_retriever())
-    # chat_history = []
-    # result = qa({"question": question, "chat_history": chat_history})
-    # print(result["answer"])
-    # topic = "Climate change"
-    # faiss_index_path = "faiss_index"  # Path to your FAISS index
-    # response = generate_response_with_faiss(topic, faiss_index_path)
-    # return render_template('index.html', query=question, answer=result["answer"])
-
-
-def ChatGPT_conversation(conversation):
-    response = openai.ChatCompletion.create(
-        model=model_id,
-        messages=conversation
-    )
-    conversation.append({'role': 'AI', 'content': response.choices[0].message.content})
-    return conversation
-
 def get_repo_files_recursive(folder):
     repo_files = []
 
@@ -123,13 +106,16 @@ def index():
         for file in files:
             if not should_ignore(file['name']):
                 convert_and_move_to_summaries(file['path'], 'summaries')
-                content = file['name']
-                conversation = [
-                    {"role": "user", "content": f"Explain the contents of the {file['name']} file in 250 words. Include function names, methods and working of the code: {content}"}
-                ]
-                response = ChatGPT_conversation(conversation)
+                with open(file['path'], 'r') as code_file:
+                    content = code_file.read()
+                summary_prompt = f"Explain the contents of the {file['name']} file in 500 words. Include function names, methods and working of the code: {content}\n\nSummary:"
+                response = ""
+                for data in chatbot.ask(
+                    summary_prompt,
+                ):
+                    response = data["message"]
                 with open(f"summaries/{file['name']}.txt", "w") as f:
-                    f.write(response[-1]["content"])
+                    f.write(response)
 
                 # Print the files and its source after its sent to summarization
                 print(f"File: {file['name']} from {file['path']}")
@@ -139,7 +125,7 @@ def index():
         langchain_response(question)
 
         # Clean up the cloned repository folder
-        shutil.rmtree(repo_folder)
+        shutil.rmtree("./clone")
         shutil.rmtree('summaries')
 
         return redirect(url_for('index'))

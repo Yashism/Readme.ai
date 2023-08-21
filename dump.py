@@ -16,8 +16,8 @@
 # app = Flask(__name__)
 
 # model_id = "gpt-3.5-turbo"
-# openai.api_key = "OPENAI_API_KEY"
-# os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
+# openai.api_key = "<Key>"
+# os.environ["OPENAI_API_KEY"] = "<Key>"
 
 # def clone_repo(repo_url):
 #     temp_dir = "/tmp/cloned_repo"
