@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Repo Summarizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>GitHub Repo Summarizer</h1>
+    <form action="/" method="post">
+        <label for="github_url">Enter GitHub Repository URL:</label><br>
+        <input type="text" id="github_url" name="github_url" required><br><br>
+        <label for="question">Enter a question about the repository:</label><br>
+        <input type="text" id="question" name="question" required><br><br>
+        <button type="submit">Get Answer</button>
+        {% if query %}
+        <h2>Your Query: {{ query }}</h2>
+        <h3>Chatbot Response: {{ answer }}</h3>
+        {% endif %}
+    </form>
+</body>
+</html>
