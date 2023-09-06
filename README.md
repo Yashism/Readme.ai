@@ -1,4 +1,4 @@
-# Readme.AI
+# Readme.ai
 Readme.ai is an application that streamlines the process of summarizing the contents of GitHub repositories. The application takes a GitHub repository URL as user input, processes the files within the repository, uses Vector DBs and advanced language models, and presents this readme file for quick review and reference.
 
 Manually creating comprehensive README files can be time-consuming and error-prone. Readme.ai leverages the power of advanced natural language processing and machine learning techniques to automatically generate informative and well-structured README files for your repositories.
